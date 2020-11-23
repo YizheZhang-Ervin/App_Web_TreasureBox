@@ -27,7 +27,7 @@ function loadBackground(bgURL, bgCanvas, completeCallback) {
 
 function moveBackground(bgCanvas, bgImage) {
     // 声音
-    // let bgsURL = require("")
+    // let bgsURL = ""
     // let bgSound = new Audio(bgsURL);
     // bgSound.loop = true;
     // bgSound.play();

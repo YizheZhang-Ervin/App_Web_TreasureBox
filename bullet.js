@@ -3,7 +3,7 @@ function createBullet(bWidth, bHeight, bURL, hero) {
     let y = hero.y - bHeight
     let bullet = new Bullet(x, y, bWidth, bHeight, bURL);
     // 子弹声音
-    // let bsURL = require("");
+    // let bsURL = "";
     // let bSound = new Audio(bsURL);
     // bSound.play();
     return bullet;
