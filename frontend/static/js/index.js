@@ -7,6 +7,7 @@ var app = new Vue({
             transferData2: "",
             mouseX: 0,
             mouseY: 0,
+            currentEle:"",
             displayComponent:""
         }
     },
@@ -68,6 +69,9 @@ var app = new Vue({
             //获取当前的x,y坐标
             this.mouseX = mousePos.x;
             this.mouseY = mousePos.y;
+            // 获取当前位置的元素
+            let ele = document.elementFromPoint(this.mouseX, this.mouseY);
+            this.currentEle = ele;
         },
         mouseCoords(ev) {
             //鼠标移动的位置

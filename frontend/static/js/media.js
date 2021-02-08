@@ -87,8 +87,7 @@ Vue.component('Media', {
             let canvas = document.getElementById("canvas001");
             let ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, 240, 240);
-        }
-        
+        },
     },
     template:
  `

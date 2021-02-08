@@ -8,7 +8,7 @@ Back End: Flask RESTful + Sqlite
 ### Frontend  
 - index页面  
 title Clock if page Visible(2 kinds of clock)  
-Mouse Position  
+Mouse Position + Current Element    
 get latitude and longitude  
 Notification  
 prevent contextmenu and f12    
@@ -35,6 +35,20 @@ Embed标签 pdf/excel/ppt
   
 - parameters页面  
 Browser Parameters  
+  
+- FrontEnd Storage  
+基本: cookie / session  
+离线存储: Application Cache / cache Storage  
+本地存储: local Storage / session Storage / web Storage Cache  
+库存储: web SQL / indexed DB
+其他: 浏览器缓存  
+    强缓存(200):Expires & cache-control  
+    协商缓存(304): Last-Modified & If-Modified-Since & Etag & If-None-Match  
+  
+- Advanced功能  
+web Workers  
+webSocket  
+文件处理相关  
   
 ## Run  
 index.html  
