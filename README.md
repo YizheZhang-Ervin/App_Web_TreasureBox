@@ -1,33 +1,61 @@
-# Canvas_CanvasCSS3
-
-## Canvas
-ctx = element.getContext  
-ctx.drawImage(img,cutX,cutY,cuWw,cutH,x,y,w,h)  
-ctx.drawRect(x,y,w,h)  // xy距离左上角
-
-## CSS3
-1. animation  
-组合使用多个则动画名字+持续时间必须要，其他可选  
-
-2. animation-name动画名称
-重复定义后出现优先级高  
-
-3. animation-duration动画持续时间
-
-4. animation-iteration-count动画迭代次数
-数字或infinite  
-
-5. animation-direction动画变化方向0%<->100%
-normal/reverse/alternate/alternatate-reverse  
-
-6. animation-delay延迟时间
-
-7. animation-timing-function速度变化
-ease/ease-in/ease-out/ease-in-out/linear/cubic-bezier()  
-steps(步数,start/end)/step-start/step-end
-
-8. animation-fill-mode填充
-forwards/backwards/both  
-
-9. animation-play-state播放状态
-running/paused  
+# Dev Treasure Box  
+   
+## Infrastructure  
+Front End: Vue + ElementUI + Axios + Echarts  
+Back End: Flask RESTful + Sqlite  
+  
+## Features  
+### Frontend  
+- index页面  
+title Clock if page Visible(2 kinds of clock)  
+Mouse Position  
+get latitude and longitude  
+Notification  
+prevent contextmenu and f12    
+CSS3 Animation  
+  
+- terminal页面  
+html  
+sql  
+js  
+python  
+axios communication with backend  
+  
+- Visualization页面  
+灯烛图-见EZInfo  
+scatter3d-见SharingBike  
+折线图-见EZInfo  
+地图(World/China)  
+  
+- Media页面  
+GetScreenShot  
+GetMedia + Take Photo  
+Video/Embed drag + drop  
+Embed标签 pdf/excel/ppt  
+  
+- parameters页面  
+Browser Parameters  
+  
+## Run  
+index.html  
+workon env_develop or source ./activate  
+cd backend > pip install -r requirements.txt  
+python -m flask run  
+  
+## Frontend: Vue  
+open liver server http://127.0.0.1:5500/frontend/index.html  
+  
+## Backend: Flask 
+### Libs
+pip install Flask_RESTful  
+pip install Flask_Cors  
+pip install Flask  
+  
+### Backend Management
+python -m flask run  
+  
+### Dependency List
+Virtual Env libs: pip freeze > requirements.txt  
+Dependency libs: pipreqs ./  
+pip install -r requirements.txt  
+  

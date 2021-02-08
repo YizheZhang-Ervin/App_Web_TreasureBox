@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <link rel="stylesheet" href="./static/css/index.css">
+        <title>Web Features</title>
+    </head>
+
+    <body>
+        <section id="app" @contextmenu.prevent="attack_cm" class="h100">
+            <!-- menu -->
+            <el-menu default-active="home" mode="horizontal" @select="changePage"
+                background-color="#000" text-color="white" active-text-color="gold"
+                class="stickyMenu">
+                <el-menu-item>Home</el-menu-item>
+                <el-submenu index="2">
+                    <template slot="title">Features</template>
+                    <el-menu-item index="terminal">Terminal</el-menu-item>
+                    <el-menu-item index="visualization">Visualization</el-menu-item>
+                    <el-menu-item index="media">Media</el-menu-item>
+                    <el-menu-item index="parameters">Parameters</el-menu-item>
+                </el-submenu>
+            </el-menu>
+            <main class="blackgold h100">
+                <!-- animation -->
+                <div id="outer">
+                    <p>(<span v-text="mouseX"></span>,<span v-text="mouseY"></span>)</p>
+                    <div id="inner"></div>
+                </div>
+                <!-- terminal -->
+                <Terminal :msg="displayComponent"></Terminal>
+                <!-- video/display media/embed/take photo -->
+                <Media :msg="displayComponent"></Media>
+                <!-- maps -->
+                <Visualization :msg="displayComponent"></Visualization>
+                <!-- parameters -->
+                <Parameters :msg="displayComponent"></Parameters>
+            </main>
+            <!-- scripts -->
+            <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+            <script src="https://cdn.jsdelivr.net/npm/axios@0.21.0/dist/axios.min.js"></script>
+            <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/dist/echarts.min.js"></script>
+            <script src="./static/js/index.js" async="async"></script>
+            <script src="./static/js/terminal.js"></script>
+            <script src="./static/js/visualization.js"></script>
+            <script src="./static/js/media.js"></script>
+            <script src="./static/js/parameters.js"></script>
+            <script src="./static/libs/china.js"></script>
+            <script src="./static/libs/world.js"></script>
+        </section>
+    </body>
+
+</html>
