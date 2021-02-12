@@ -1,38 +1,38 @@
 Vue.component('Media', {
-    props:{
-        msg:String
+    props: {
+        msg: String
     },
     // 动态props
     watch: {
         msg: function (newVal) {
-            if(newVal=="media"){
+            if (newVal == "media") {
                 this.displayDrawer = true; //newVal即是msg
             }
         },
     },
-    mounted(){
-        if(this.msg=="media"){
+    mounted() {
+        if (this.msg == "media") {
             this.displayDrawer = true;
         }
     },
-    data(){
-        return{
-            displayDrawer:false,
-            mainStyle:{
-                width: this.getWidth()+ 'px',
-                height: this.getHeight()*0.7 + 'px',
-                overflowY:"scroll",
-                textAlign:"center"
+    data() {
+        return {
+            displayDrawer: false,
+            mainStyle: {
+                width: this.getWidth() + 'px',
+                height: this.getHeight() * 0.7 + 'px',
+                overflowY: "scroll",
+                textAlign: "center"
             },
         }
     },
-    methods:{
-        getWidth(){
-			return parseInt(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth);
-		},
-		getHeight(){
-			return parseInt(window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
-		},
+    methods: {
+        getWidth() {
+            return parseInt(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth);
+        },
+        getHeight() {
+            return parseInt(window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
+        },
         // video drag and drop
         allowDrop(ev) {
             ev.preventDefault();
@@ -64,7 +64,7 @@ Vue.component('Media', {
                 console.log(PermissionDeniedError);
             })
         },
-        getScreenShot(){
+        getScreenShot() {
             let video = document.getElementById("video001");
             let constraints = {
                 video: { width: 300, height: 300 },
@@ -88,9 +88,96 @@ Vue.component('Media', {
             let ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, 240, 240);
         },
+        recordAudio() {
+            const record = document.getElementById('start');
+            const stops = document.getElementById('stop');
+            stops.disabled = true;
+            const visualizer = document.getElementById('visualizer');
+            let audioCtx;
+            const canvasCtx = visualizer.getContext("2d");
+            if (navigator.mediaDevices.getUserMedia) {
+                const constraints = { audio: true };
+                let chunks = [];
+                let onSuccess = (stream)=> {
+                    const mediaRecorder = new MediaRecorder(stream);
+                    this.visualizeAudio(audioCtx,canvasCtx,stream);
+                    record.onclick = function () {
+                        mediaRecorder.start();
+                        record.innerText = "Recording..."
+                        stops.disabled = false;
+                        record.disabled = true;
+                    }
+                    stops.onclick = function () {
+                        mediaRecorder.stop();
+                        record.innerText = "Record"
+                        stops.disabled = true;
+                        record.disabled = false;
+                    }
+                    mediaRecorder.onstop = (e)=> {
+                        const audio = document.createElement('audio');
+                        document.getElementById("historys").appendChild(audio);
+                        audio.controls = true;
+                        const blobs = new Blob(chunks, { 'type': 'audio/mp3' });            
+                        chunks = [];
+                        const audioURL = window.URL.createObjectURL(blobs);
+                        audio.src = audioURL;
+                    }
+                    mediaRecorder.ondataavailable = (e)=> {
+                        chunks.push(e.data);
+                    }
+                }
+                let onError = function (err) {
+                    console.log('Error:' + err);
+                }
+                navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
+            } else {
+                console.log('getUserMedia not supported!');
+            }
+        },
+        visualizeAudio(audioCtx,canvasCtx,stream) {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+            const source = audioCtx.createMediaStreamSource(stream);
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 2048;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            source.connect(analyser);
+            draw()
+            function draw() {
+                const WIDTH = visualizer.width
+                const HEIGHT = visualizer.height;
+                requestAnimationFrame(draw);
+                analyser.getByteTimeDomainData(dataArray);
+                let grd = canvasCtx.createLinearGradient(0, 60, 0, 0);
+                grd.addColorStop(0, "darkblue");
+                grd.addColorStop(0.5, "lightblue");
+                grd.addColorStop(1, "darkblue");
+                canvasCtx.fillStyle = grd;
+                canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+                canvasCtx.lineWidth = 2;
+                canvasCtx.strokeStyle = "white";
+                canvasCtx.beginPath();
+                let sliceWidth = WIDTH * 1.0 / bufferLength;
+                let x = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    let v = dataArray[i] / 128.0;
+                    let y = v * HEIGHT / 2;
+                    if (i === 0) {
+                        canvasCtx.moveTo(x, y);
+                    } else {
+                        canvasCtx.lineTo(x, y);
+                    }
+                    x += sliceWidth;
+                }
+                canvasCtx.lineTo(visualizer.width, visualizer.height / 2);
+                canvasCtx.stroke();
+            }
+        },
     },
     template:
- `
+        `
  <el-drawer title="Parameters" :visible.sync="displayDrawer" size="70%" direction="btt" :with-header="false">
     <section :style="mainStyle">
         <el-divider></el-divider>
@@ -109,6 +196,13 @@ Vue.component('Media', {
         <button @click="getCamera">Open Camera</button>
         <button @click="getScreenShot">Open ScreenShot</button>
         <button @click="takePhoto">Take Photo</button>
+        <el-divider></el-divider>
+        <el-divider content-position="left">Audio</el-divider>
+        <canvas class="bordered" id="visualizer" height="60px"></canvas>
+        <button id="run" @click="recordAudio">Run Audio</button>
+        <button id="start">Record</button>
+        <button id="stop">Stop</button>
+        <section id="historys">Records</section>
     </section>
  </el-drawer>
 `

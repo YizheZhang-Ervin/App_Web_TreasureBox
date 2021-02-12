@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask import g
 import sqlite3
 from contextlib import closing
+import speech_recognition as sr
 
 # Initialize Flask
 app = Flask(__name__,static_folder='static',template_folder='static',static_url_path="")
@@ -123,6 +124,5 @@ class jsonAPI2(Resource):
         except Exception:
             return jsonify({"error":"error"})
 api.add_resource(jsonAPI2, '/api/')
-
 if __name__ == '__main__':
     app.run(debug=True)

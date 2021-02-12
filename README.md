@@ -19,7 +19,7 @@ html
 sql  
 js  
 python  
-axios communication with backend  
+axios communication with backend sqlite  
   
 - Visualization页面  
 灯烛图-见EZInfo  
@@ -32,6 +32,7 @@ GetScreenShot
 GetMedia + Take Photo  
 Video/Embed drag + drop  
 Embed标签 pdf/excel/ppt  
+Record audio  
   
 - parameters页面  
 Browser Parameters  
