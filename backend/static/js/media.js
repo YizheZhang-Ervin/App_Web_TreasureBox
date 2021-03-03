@@ -24,6 +24,7 @@ Vue.component('Media', {
                 overflowY: "scroll",
                 textAlign: "center"
             },
+            codeArea:""
         }
     },
     methods: {
@@ -88,6 +89,22 @@ Vue.component('Media', {
             let ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, 240, 240);
         },
+        // 录制声音
+        // 传值给后台
+        postAudio(params){
+            axios.post(`http://127.0.0.1:5000/api/audio/`, { key: JSON.stringify(params) })
+                .then((response) => {
+                    if (response.data.error == "error") {
+                        console.log("bakend error");
+                    } else {
+                        console.log(response.data.result);
+                        this.codeArea = this.codeArea +"\n"+ response.data.result;
+                    }
+                }, (err)=> {
+                        console.log(err.data);
+                    }
+                );
+        },
         recordAudio() {
             const record = document.getElementById('start');
             const stops = document.getElementById('stop');
@@ -123,7 +140,17 @@ Vue.component('Media', {
                         audio.src = audioURL;
                     }
                     mediaRecorder.ondataavailable = (e)=> {
+                        let postAudio =  this.postAudio;
                         chunks.push(e.data);
+                        // blob转base64
+                        function blobToDataURL(blob) {
+                            let a = new FileReader();
+                            a.onload = (e)=> { 
+                                postAudio(e.target.result);
+                            }
+                            a.readAsDataURL(blob);
+                        }
+                        blobToDataURL(e.data);
                     }
                 }
                 let onError = function (err) {
@@ -183,12 +210,16 @@ Vue.component('Media', {
         <el-divider></el-divider>
         <el-divider content-position="left">Drag Drop Media</el-divider>
         <div @dragstart="drag($event)" draggable="true">./static/123.xlsx</div>
+
         <!- drag drop video ->
         <video height="300px" width="300px" @drop="drop($event)" control autoplay
         @dragover="allowDrop($event)" class="bordered"></video>
+
         <!- drag drop embed ->
         <embed type="application/pdf" height="300px" width="300px" 
         @drop="drop($event)" control autoplay @dragover="allowDrop($event)" class="bordered"/>
+
+        <!- Camera ->
         <el-divider></el-divider>
         <el-divider content-position="left">Get Media</el-divider>
         <video id="video001" height="300px" width="300px" autoplay class="bordered"></video>
@@ -196,6 +227,8 @@ Vue.component('Media', {
         <button @click="getCamera">Open Camera</button>
         <button @click="getScreenShot">Open ScreenShot</button>
         <button @click="takePhoto">Take Photo</button>
+
+        <!- Audio ->
         <el-divider></el-divider>
         <el-divider content-position="left">Audio</el-divider>
         <canvas class="bordered" id="visualizer" height="60px"></canvas>
@@ -203,6 +236,7 @@ Vue.component('Media', {
         <button id="start">Record</button>
         <button id="stop">Stop</button>
         <section id="historys">Records</section>
+        <code v-text="codeArea"></code>
     </section>
  </el-drawer>
 `

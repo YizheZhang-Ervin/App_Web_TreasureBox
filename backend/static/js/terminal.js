@@ -62,6 +62,9 @@ Vue.component('Terminal', {
             } else if (val == "sql") {
                 this.cmdDesc = "Super SQL v1.0";
                 this.commands = ">>";
+            } else if (val == "linux") {
+                this.cmdDesc = "Super Linux v1.0";
+                this.commands = ">>";
             }
         },
         changeCommands() {
@@ -76,6 +79,8 @@ Vue.component('Terminal', {
                     this.get1(sentence, rstArea);
                 } else if (this.cmdType == "sql") {
                     this.get2(sentence, rstArea);
+                } else if (this.cmdType == "linux") {
+                    this.post(sentence, rstArea);
                 }
             }
         },
@@ -111,13 +116,13 @@ Vue.component('Terminal', {
                 }
             );
         },
-        post: function () {
-            axios.post(`http://127.0.0.1:5000/api/`, { key: JSON.stringify(this.params) })
+        post: function (params, rstArea) {
+            axios.post(`http://127.0.0.1:5000/api/`, { key: JSON.stringify(params) })
                 .then((response) => {
                     if (response.data.error == "error") {
                         console.log("bakend error");
                     } else {
-                        this.getRst = response.data.result;
+                        rstArea.srcdoc = response.data.result;
                     }
                 },
                     function (err) {
@@ -138,6 +143,7 @@ Vue.component('Terminal', {
             <el-radio label="js">JavaScript</el-radio>
             <el-radio label="py">Python</el-radio>
             <el-radio label="sql">SQL</el-radio>
+            <el-radio label="linux">Linux</el-radio>
         </el-radio-group>
         <p v-text="cmdDesc" :style="descStyle"></p>
         <el-input type="textarea" v-model="commands" @change="changeCommands"></el-input>

@@ -5,24 +5,27 @@ from flask import g
 import sqlite3
 from contextlib import closing
 import speech_recognition as sr
+import speech_recognition as sr
+import base64
+import os
 
 # Initialize Flask
 app = Flask(__name__,static_folder='static',template_folder='static',static_url_path="")
 api = Api(app)
 
 # Cross Domain
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+cors = CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # parse parameters
 parser = reqparse.RequestParser()
 parser.add_argument('key', type=str)
 
 # database
-DATABASE = 'testDB.db'
+DATABASE = 'DB/testDB.db'
 # 初始化模式: 只需使用一次
 def init_db():
     with closing(connect_db()) as db:
-        with app.open_resource('schema.sql', mode='r') as f:
+        with app.open_resource('DB/schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit()
     # with app.app_context():
@@ -119,10 +122,49 @@ class jsonAPI2(Resource):
         try:
             args = parser.parse_args()
             key = eval(args['key'])
-            jsonObj = {"result":key,'function':2}
+            status = os.system(key)
+            jsonObj = {"result":status,'function':2}
             return jsonify(jsonObj)
         except Exception:
             return jsonify({"error":"error"})
 api.add_resource(jsonAPI2, '/api/')
+
+class AudioAPI(Resource):
+    # http://127.0.0.1:5000/api/audio/
+    # 传{"key":"值"}
+    def post(self):
+        try:
+            args = parser.parse_args()
+            key = eval(args['key'])
+            key = base64.b64decode(key[35:])
+            result = audioRecognition(key)
+            jsonObj = {"result":result}
+            return jsonify(jsonObj)
+        except Exception:
+            return jsonify({"error":"error"})
+api.add_resource(AudioAPI, '/api/audio/')
+
+def audioRecognition(audio):
+    webm_path = "Audio/audio.webm"
+    wav_path = "Audio/audio.wav"
+    sampling_rate = 16000
+    channel = 1
+    # 二进制声音写入webm文件
+    with open(webm_path,"wb") as f:
+        f.write(audio)
+    # webm 转 wav
+    if os.path.exists(wav_path):
+        os.remove(wav_path)
+    command = "ffmpeg -loglevel quiet -i {} -ac {} -ar {} {}".format(webm_path, channel, sampling_rate, wav_path)
+    os.system(command)
+    # 语音识别
+    r = sr.Recognizer()
+    audio2 = sr.AudioFile(wav_path)
+    with audio2 as source:
+        audio3 = r.record(source)
+    recognizeResult = r.recognize_google(audio3, language='zh-CN', show_all=True)
+    text = recognizeResult["alternative"][0]["transcript"]
+    return text
+
 if __name__ == '__main__':
     app.run(debug=True)
