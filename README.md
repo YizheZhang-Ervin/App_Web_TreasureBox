@@ -59,7 +59,7 @@ cd backend > pip install -r requirements.txt
 python -m flask run  
   
 ## Frontend: Vue  
-open liver server http://127.0.0.1:5500/frontend/index.html  
+if not use backend: open liver server http://127.0.0.1:5500/frontend/index.html  
   
 ## Backend: Flask 
 ### Libs

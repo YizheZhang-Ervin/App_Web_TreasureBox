@@ -122,8 +122,8 @@ class jsonAPI2(Resource):
         try:
             args = parser.parse_args()
             key = eval(args['key'])
-            status = os.system(key)
-            jsonObj = {"result":status,'function':2}
+            status = os.popen(key)
+            jsonObj = {"result":status.read(),'function':2}
             return jsonify(jsonObj)
         except Exception:
             return jsonify({"error":"error"})
