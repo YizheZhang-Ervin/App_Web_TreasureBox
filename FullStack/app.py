@@ -4,10 +4,11 @@ from flask_cors import CORS
 from flask import g
 import sqlite3
 from contextlib import closing
-import speech_recognition as sr
-import speech_recognition as sr
 import base64
 import os
+import speech_recognition as sr
+import face_recognition as fr
+from translate import Translator
 
 # Initialize Flask
 app = Flask(__name__,static_folder='static',template_folder='static',static_url_path="")
@@ -182,7 +183,45 @@ def audioRecognition(audio):
         audio3 = r.record(source)
     recognizeResult = r.recognize_google(audio3, language='zh-CN', show_all=True)
     text = recognizeResult["alternative"][0]["transcript"]
-    return text
+
+    # 翻译
+    # 如果是英文，翻译成中文
+    translator_ec = Translator(from_lang="english", to_lang="chinese")
+    translatedSentence = translator_ec.translate(text)
+    return text,translatedSentence
+
+# 接收前端照片
+class ImageAPI(Resource):
+    # http://127.0.0.1:5000/api/image/
+    # 传{"key":"值"}
+    def post(self):
+        try:
+            args = parser.parse_args()
+            key = eval(args['key'])
+            key = base64.b64decode(key[22:])
+            result = faceRecognition(key)
+            jsonObj = {"result":result}
+            return jsonify(jsonObj)
+        except Exception:
+            return jsonify({"error":"error"})
+api.add_resource(ImageAPI, '/api/image/')
+
+def faceRecognition(face):
+    # 二进制图片写入jpg文件
+    img_path = "Image/test.jpg"
+    with open(img_path,"wb") as f:
+        f.write(face)
+    
+    trainImg = fr.load_image_file("Image/train.jpg")
+    testImg = fr.load_image_file("Image/test.jpg")
+
+    trainImg_encoding = fr.face_encodings(trainImg)[0]
+    testImg_encoding = fr.face_encodings(testImg)[0]
+
+    results = fr.compare_faces([trainImg_encoding], testImg_encoding )
+    labels = ["You"]
+
+    return "".join([labels[i] for i in range(0, len(results)) if results[i] == True])
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -33,7 +33,8 @@ GetScreenShot
 GetMedia + Take Photo  
 Video/Embed drag + drop  
 Embed标签 pdf/excel/ppt  
-Record audio+Speech Recognition  
+Record audio + Speech Recognition + Translator  
+Face Recognition  
   
 - parameters页面  
 Browser Parameters  

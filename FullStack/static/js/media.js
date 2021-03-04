@@ -24,7 +24,7 @@ Vue.component('Media', {
                 overflowY: "scroll",
                 textAlign: "center"
             },
-            codeArea:""
+            codeArea: ""
         }
     },
     methods: {
@@ -88,21 +88,49 @@ Vue.component('Media', {
             let canvas = document.getElementById("canvas001");
             let ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, 240, 240);
+            this.postImage(canvas.toDataURL("image/jpg"));
         },
+        // 传image给后台,接收字符串
+        postImage(params) {
+            axios.post(`http://127.0.0.1:5000/api/image/`, { key: JSON.stringify(params) })
+                .then((response) => {
+                    if (response.data.error == "error") {
+                        console.log("bakend error");
+                        iframe.srcdoc = "未通过身份验证";
+                    } else {
+                        let iframe = document.getElementById("iframe001");
+                        if (response.data.result == "You") {
+                            let video = document.getElementById("video001");
+                            video.style.display = "none";
+                            iframe.srcdoc = "通过身份验证";
+                            const record = document.getElementById('start');
+                            record.disabled = false;
+                        } else {
+                            iframe.srcdoc = "未通过身份验证";
+                        }
+                    }
+                },
+                    function (err) {
+                        console.log(err.data);
+                    }
+                );
+        },
+
         // 录制声音
         // 传值给后台
-        postAudio(params){
+        postAudio(params) {
             axios.post(`http://127.0.0.1:5000/api/audio/`, { key: JSON.stringify(params) })
                 .then((response) => {
                     if (response.data.error == "error") {
                         console.log("bakend error");
+                        this.codeArea = "语音错误";
                     } else {
-                        console.log(response.data.result);
-                        this.codeArea = this.codeArea +"\n"+ response.data.result;
+                        let textList = response.data.result;
+                        this.codeArea = this.codeArea + "\n" + `${textList[0]}(${textList[1]})`;
                     }
-                }, (err)=> {
-                        console.log(err.data);
-                    }
+                }, (err) => {
+                    console.log(err.data);
+                }
                 );
         },
         recordAudio() {
@@ -115,9 +143,9 @@ Vue.component('Media', {
             if (navigator.mediaDevices.getUserMedia) {
                 const constraints = { audio: true };
                 let chunks = [];
-                let onSuccess = (stream)=> {
+                let onSuccess = (stream) => {
                     const mediaRecorder = new MediaRecorder(stream);
-                    this.visualizeAudio(audioCtx,canvasCtx,stream);
+                    this.visualizeAudio(audioCtx, canvasCtx, stream);
                     record.onclick = function () {
                         mediaRecorder.start();
                         record.innerText = "Recording..."
@@ -130,22 +158,22 @@ Vue.component('Media', {
                         stops.disabled = true;
                         record.disabled = false;
                     }
-                    mediaRecorder.onstop = (e)=> {
+                    mediaRecorder.onstop = (e) => {
                         const audio = document.createElement('audio');
                         document.getElementById("historys").appendChild(audio);
                         audio.controls = true;
-                        const blobs = new Blob(chunks, { 'type': 'audio/mp3' });            
+                        const blobs = new Blob(chunks, { 'type': 'audio/mp3' });
                         chunks = [];
                         const audioURL = window.URL.createObjectURL(blobs);
                         audio.src = audioURL;
                     }
-                    mediaRecorder.ondataavailable = (e)=> {
-                        let postAudio =  this.postAudio;
+                    mediaRecorder.ondataavailable = (e) => {
+                        let postAudio = this.postAudio;
                         chunks.push(e.data);
                         // blob转base64
                         function blobToDataURL(blob) {
                             let a = new FileReader();
-                            a.onload = (e)=> { 
+                            a.onload = (e) => {
                                 postAudio(e.target.result);
                             }
                             a.readAsDataURL(blob);
@@ -161,7 +189,7 @@ Vue.component('Media', {
                 console.log('getUserMedia not supported!');
             }
         },
-        visualizeAudio(audioCtx,canvasCtx,stream) {
+        visualizeAudio(audioCtx, canvasCtx, stream) {
             if (!audioCtx) {
                 audioCtx = new AudioContext();
             }
@@ -227,6 +255,7 @@ Vue.component('Media', {
         <button @click="getCamera">Open Camera</button>
         <button @click="getScreenShot">Open ScreenShot</button>
         <button @click="takePhoto">Take Photo</button>
+        <iframe id="iframe001"></iframe>
 
         <!- Audio ->
         <el-divider></el-divider>
