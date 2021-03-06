@@ -240,7 +240,7 @@ Vue.component('Media', {
     <section :style="mainStyle">
         <el-divider></el-divider>
         <el-divider content-position="left">Drag Drop Media</el-divider>
-        <div @dragstart="drag($event)" draggable="true">./static/123.xlsx</div>
+        <div @dragstart="drag($event)" draggable="true">/123.xlsx</div>
 
         <!- drag drop video ->
         <video height="300px" width="300px" @drop="drop($event)" control autoplay

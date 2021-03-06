@@ -154,3 +154,6 @@ dmypy.json
 
 # cache
 staticfiles/
+
+# data
+/Image/test.jpg
