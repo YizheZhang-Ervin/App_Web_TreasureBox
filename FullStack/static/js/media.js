@@ -94,15 +94,18 @@ Vue.component('Media', {
         postImage(params) {
             axios.post(`http://127.0.0.1:5000/api/image/`, { key: JSON.stringify(params) })
                 .then((response) => {
+                    let iframe = document.getElementById("iframe001");
                     if (response.data.error == "error") {
                         console.log("bakend error");
                         iframe.srcdoc = "未通过身份验证";
                     } else {
-                        let iframe = document.getElementById("iframe001");
-                        if (response.data.result == "You") {
+                        if (response.data.result !== "NOBODY") {
                             let video = document.getElementById("video001");
-                            video.style.display = "none";
-                            iframe.srcdoc = "通过身份验证";
+                            let aiVoice = document.getElementById("aiVoice");
+                            // video.style.display = "none";
+                            iframe.srcdoc = `欢迎回来,${response.data.result}! (相似度:${response.data.likely})`;
+                            aiVoice.src = `data:audio/mp3;base64,${response.data.aiVoice}`;
+                            aiVoice.play();
                             const record = document.getElementById('start');
                             record.disabled = false;
                         } else {
@@ -248,6 +251,7 @@ Vue.component('Media', {
         @drop="drop($event)" control autoplay @dragover="allowDrop($event)" class="bordered"/>
 
         <!- Camera ->
+        <audio id="aiVoice" hidden></audio>
         <el-divider></el-divider>
         <el-divider content-position="left">Get Media</el-divider>
         <video id="video001" height="300px" width="300px" autoplay class="bordered"></video>
