@@ -28,9 +28,9 @@ linux
 axios communication with backend sqlite  
   
 - Visualization页面  
-灯烛图-见EZInfo  
+灯烛图-见InfoBlog    
 scatter3d-见SharingBike  
-折线图-见EZInfo  
+折线图-见InfoBlog    
 地图(World/China)  
   
 - Media页面  
