@@ -46,20 +46,6 @@ WordsToSpeech
   
 - parameters页面  
 Browser Parameters  
-  
-- FrontEnd Storage  
-基本: cookie / session  
-离线存储: Application Cache / cache Storage  
-本地存储: local Storage / session Storage / web Storage Cache  
-库存储: web SQL / indexed DB
-其他: 浏览器缓存  
-    强缓存(200):Expires & cache-control  
-    协商缓存(304): Last-Modified & If-Modified-Since & Etag & If-None-Match  
-  
-- Advanced功能  
-web Workers  
-webSocket  
-文件处理相关  
    
 _____
   
